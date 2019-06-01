@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout mainLL, cardsLL;
     TextView timer;
     TileObject selectedTile1, selectedTile2;
+    Context context;
 
 
     @Override
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         mainLL = (LinearLayout)findViewById(R.id.mainLL);
         cardsLL = (LinearLayout)findViewById(R.id.cardsLL);
         timer = (TextView) findViewById(R.id.timer);
+        context = MainActivity.this;
 
         //TODO MOVE COMPLETE CODE TO FRAGMENT AND CALL REPLACE FRAGMENT EVERY TIME LEVEL IS CHANGED
         if(savedInstanceState != null && !savedInstanceState.isEmpty()) {
@@ -134,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             if(noOfRemovedTiles == m*n){
                 Sessions.setLevel(this, level+1);
                 getLevelAndSetValues();
+                Toast.makeText(context, "Great move to next level! Next level -- " + level, Toast.LENGTH_LONG).show();
             }
             selectedTile1 = null;
             selectedTile2 = null;
@@ -169,11 +172,13 @@ public class MainActivity extends AppCompatActivity {
         new CountDownTimer(millisInFuture, 1000){
             public void onTick(long millisUntilFinished){
                 //TODO change progress bar
-                timer.setText(millisUntilFinished+"");
+                timer.setText(millisUntilFinished/1000+"");
             }
             public  void onFinish(){
                 //TODO show time up view
                 //cardsLL.removeAllViews();
+                Toast.makeText(context, "Time is up!, Try Again.", Toast.LENGTH_LONG).show();
+                getLevelAndSetValues();
             }
         }.start();
     }
