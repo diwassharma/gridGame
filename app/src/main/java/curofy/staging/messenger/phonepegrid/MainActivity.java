@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     Integer level, m, n, noOfRemovedTiles, score = 0;
     ArrayList<TileObject> tileObjectArrayList;
 
-    LinearLayout mainLL;
+    LinearLayout mainLL, cardsLL;
     TextView timer;
     TileObject selectedTile1, selectedTile2;
 
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mainLL = (LinearLayout)findViewById(R.id.mainLL);
+        cardsLL = (LinearLayout)findViewById(R.id.cardsLL);
         timer = (TextView) findViewById(R.id.timer);
 
         //TODO MOVE COMPLETE CODE TO FRAGMENT AND CALL REPLACE FRAGMENT EVERY TIME LEVEL IS CHANGED
@@ -46,9 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private void getLevelAndSetValues() {
         level = Sessions.getLevel(this);
         tileObjectArrayList = new ArrayList<>();
+        noOfRemovedTiles = 0;
 
         //TODO for next level
-        //mainLL.removeAllViews();
+        cardsLL.removeAllViews();
         selectedTile1 = null;
         selectedTile2 = null;
         //get m*n value according to level
@@ -98,7 +100,15 @@ public class MainActivity extends AppCompatActivity {
                         compareTiles();
                     } else if(selectedTile1 != null && selectedTile2 == null) {
                         selectedTile2 = tileObjectArrayList.get(tile.getId());
-                        compareTiles();
+                        TextView t = (TextView)tile.findViewById(R.id.tile1TV);
+                        t.setVisibility(View.VISIBLE);
+                        t.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                compareTiles();
+                            }
+                        }, 1000);
+
                     } else {
                         selectedTile1 = tileObjectArrayList.get(tile.getId());
                         TextView t = (TextView)tile.findViewById(R.id.tile1TV);
@@ -108,13 +118,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             tile.setVisibility(View.VISIBLE);
-            this.mainLL.addView(tile);
+            this.cardsLL.addView(tile);
 
 
             //TODO start timer
-
-            startTimer();
         }
+        startTimer();
+
     }
 
     private void compareTiles() {
@@ -125,14 +135,17 @@ public class MainActivity extends AppCompatActivity {
                 Sessions.setLevel(this, level+1);
                 getLevelAndSetValues();
             }
+            selectedTile1 = null;
+            selectedTile2 = null;
+            return;
         } else {
             resetTiles();
         }
     }
 
     private void removeTiles(){
-        mainLL.removeView(findViewById(tileObjectArrayList.indexOf(selectedTile1)));
-        mainLL.removeView(findViewById(tileObjectArrayList.indexOf(selectedTile2)));
+        cardsLL.removeView(findViewById(tileObjectArrayList.indexOf(selectedTile1)));
+        cardsLL.removeView(findViewById(tileObjectArrayList.indexOf(selectedTile2)));
     }
 
     private void resetTiles(){
@@ -145,7 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
         View tile2 = findViewById(id2);
         TextView t2 = (TextView)tile2.findViewById(R.id.tile1TV);
-        t.setVisibility(View.GONE);
+        t2.setVisibility(View.GONE);
+
+        selectedTile1 = null;
+        selectedTile2 = null;
     }
 
     private void startTimer() {
@@ -157,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
             }
             public  void onFinish(){
                 //TODO show time up view
+                //cardsLL.removeAllViews();
             }
         }.start();
     }
